@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SceneIngame.h"
+#include "Bullet.h"
 
 SceneIngame* SceneIngame::create()
 {
@@ -78,13 +79,24 @@ void SceneIngame::logic(float dt)
 	if (right) pos += Vec2(dt * PLAYER_MOVEMENT_SPEED, 0);
 
 	player->setPosition(pos);
+
 	if (fire) {
-		auto bullet = Node::create();
+		/*auto bullet = Node::create();
 		auto body = PhysicsBody::createCircle(5);
 		bullet->setPosition(player->getPosition());
 		bullet->addComponent(body);
 		body->setVelocity(Vec2(0, 1000));
 		body->setCollisionBitmask(0);
+		bullet->runAction(Sequence::create(
+			DelayTime::create(1.0f),
+			RemoveSelf::create(),
+			nullptr
+		));
+		addChild(bullet);*/
+
+		auto bullet = Bullet::create(0,0);
+		bullet->setPosition(player->getPosition());
+		bullet->getBody()->setVelocity(Vec2(0, 1000));
 		bullet->runAction(Sequence::create(
 			DelayTime::create(1.0f),
 			RemoveSelf::create(),
