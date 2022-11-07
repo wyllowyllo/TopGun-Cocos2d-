@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "SceneIngame.h"
 #include "Bullet.h"
+#include "Unit.h"
 
 SceneIngame* SceneIngame::create()
 {
@@ -31,17 +32,25 @@ void SceneIngame::onEnter()
 	world->setGravity(Vec2::ZERO);
 	if(DEBUG_MODE )world->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL); //only use when Debugging
 
-	player = Node::create();
+	//player = Node::create();
+	//player->setPosition(Vec2(1280 / 2, 720 / 2));
+
+
+	//auto body = PhysicsBody::createBox(Size(75, 75)); // create a Box-shape component
+
+	//body->setRotationEnable(false); // player doen't be rotated by object collision
+	//body->setCollisionBitmask(0); //player doesn''t collide to bullets
+
+	//player->addComponent(body); // Insert a Component to Ndoe. Componet makes a node do actions.
+	//addChild(player);
+
+	player = Unit::create(Size(75, 75), PLAYER_MASK, TAG_PLAYER);
 	player->setPosition(Vec2(1280 / 2, 720 / 2));
-
-
-	auto body = PhysicsBody::createBox(Size(75, 75)); // create a Box-shape component
-
-	body->setRotationEnable(false); // player doen't be rotated by object collision
-	body->setCollisionBitmask(0); //player doesn''t collide to bullets
-
-	player->addComponent(body); // Insert a Component to Ndoe. Componet makes a node do actions.
 	addChild(player);
+
+	auto enemy = Unit::create(Size(75, 75), ENEMY_MASK, TAG_ENEMY);
+	enemy->setPosition(Vec2(1280/2, 720/2+200));
+	addChild(enemy);
 }
 
 void SceneIngame::onkeyPressed(EventKeyboard::KeyCode c, Event* e)
@@ -94,7 +103,7 @@ void SceneIngame::logic(float dt)
 		));
 		addChild(bullet);*/
 
-		auto bullet = Bullet::create(0,0);
+		auto bullet = Bullet::create(PLAYER_BULLET_MASK,TAG_PLAYER_BULLET);
 		bullet->setPosition(player->getPosition());
 		bullet->getBody()->setVelocity(Vec2(0, 1000));
 		bullet->runAction(Sequence::create(
