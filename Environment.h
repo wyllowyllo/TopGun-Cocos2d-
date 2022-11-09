@@ -24,4 +24,6 @@
 #define TAG_PLAYER_BULLET 3
 #define TAG_ENEMY_BULLET 4
 
+#define ENEMY_BULLET_SPEED 500
+
 #endif

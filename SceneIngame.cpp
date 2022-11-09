@@ -2,6 +2,7 @@
 #include "SceneIngame.h"
 #include "Bullet.h"
 #include "Unit.h"
+#include "EnemyComponent.h"
 
 SceneIngame* SceneIngame::create()
 {
@@ -22,6 +23,10 @@ bool SceneIngame::init()
 
 	getEventDispatcher()->addEventListenerWithSceneGraphPriority(keybd, this);
 	schedule(CC_SCHEDULE_SELECTOR(SceneIngame::logic));
+
+	auto contact = EventListenerPhysicsContact::create();
+	contact->onContactBegin = std::bind(&SceneIngame::onContactBegin, this, std::placeholders::_1);
+	getEventDispatcher()->addEventListenerWithSceneGraphPriority(contact, this);
 	return true;
 }
 
@@ -49,8 +54,14 @@ void SceneIngame::onEnter()
 	addChild(player);
 
 	auto enemy = Unit::create(Size(75, 75), ENEMY_MASK, TAG_ENEMY);
+	enemy->addComponent(EnemyAttackRoutine::create(EnemyAttackType::NORMAL));
 	enemy->setPosition(Vec2(1280/2, 720/2+200));
 	addChild(enemy);
+}
+
+Unit* SceneIngame::getPlayer()
+{
+	return this->player;
 }
 
 void SceneIngame::onkeyPressed(EventKeyboard::KeyCode c, Event* e)
@@ -79,7 +90,7 @@ void SceneIngame::onkeyReleased(EventKeyboard::KeyCode c, Event* e)
 
 void SceneIngame::logic(float dt)
 {
-	if (!player) return;
+	if (!player) return;  // player==nullptr이면 종료
 
 	Vec2 pos = player->getPosition();
 	if (up) pos += Vec2(0, dt*PLAYER_MOVEMENT_SPEED);
@@ -113,4 +124,38 @@ void SceneIngame::logic(float dt)
 		));
 		addChild(bullet);
 	}
+}
+
+bool SceneIngame::onContactBegin(PhysicsContact& contact)
+{
+	int tagA = contact.getShapeA()->getBody()->getTag();
+	int tagB = contact.getShapeB()->getBody()->getTag();
+	Node* a = contact.getShapeA()->getBody()->getNode(); // Unit은 Node를 상속받았으므로 Unit은 Node이다
+	Node* b = contact.getShapeB()->getBody()->getNode();
+
+	if (tagA == TAG_PLAYER_BULLET && tagB == TAG_ENEMY)
+		b->removeFromParent();
+	if (tagA == TAG_ENEMY && tagB == TAG_PLAYER_BULLET)
+		a->removeFromParent();
+
+	if (tagA == TAG_PLAYER && tagB == TAG_ENEMY) {
+		a->removeFromParent();
+		player = nullptr;
+	}
+	if (tagA == TAG_ENEMY && tagB == TAG_PLAYER) {
+		b->removeFromParent();
+		player = nullptr;
+	}
+
+	if (tagA == TAG_PLAYER && tagB == TAG_ENEMY_BULLET) {
+		a->removeFromParent();
+		player = nullptr;
+	}
+		
+	if (tagB == TAG_ENEMY_BULLET && tagB == TAG_PLAYER) {
+		b->removeFromParent();
+		player = nullptr;
+	}
+
+	return true;
 }
