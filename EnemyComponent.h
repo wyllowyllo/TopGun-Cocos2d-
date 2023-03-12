@@ -1,31 +1,26 @@
 #pragma once
-#ifndef __EnemyComponet__H__
-#define __EnemyComponet__H__
+#ifndef __ENEMYCOMPONENT_H__
+#define __ENEMYCOMPONENT_H__
 
-#include"stdafx.h"
+#include "stdafx.h"
 
-
-enum class EnemyAttackType {
+enum class EnemyAttacktype {
 	NORMAL
 };
-class EnemyAttackRoutine: public Component {
+class EnemyAttackRoutine :public Component {
 private:
-	EnemyAttackType type;
-	float elapsed=0;
+	EnemyAttacktype type;
+	float elapsed = 0;
 public:
-	static EnemyAttackRoutine* create(EnemyAttackType t);
-	virtual bool init(EnemyAttackType t);
+	static EnemyAttackRoutine* create(EnemyAttacktype t);
+	virtual bool init(EnemyAttacktype t);
 
-	virtual void update(float dt); //attack type update
-
-	void logic_normal(float dt);  //bullet algorithm when the state is 'NORMAL'
+	virtual void update(float dt); //시간 변화량
+	void logic_normal(float dt);
 };
 
-class EnemyMoveRoutine : public Component {
-private:
-
-public:
+class EnemyMovementRoutine :public Component {
 
 };
+#endif // !__ENEMYCOMPONENT_H__
 
-#endif

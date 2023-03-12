@@ -1,25 +1,27 @@
-#ifndef _SCENE_INGAME_H
-#define _SCENE_INGAME_H
+#pragma once
+#ifndef __SCENE_INGAME_H__
+#define __SCENE_INGAME_H__
+
 
 #include "stdafx.h"
 #include "Unit.h"
-// class Unit; ->클래스 전방선언
-
-
-class SceneIngame :public Scene {
+#include "Environment.h"
+class SceneInGame :public Scene {
 private:
-	Unit* player=nullptr;
-	bool up = false, down=false , left=false, right=false;
-	bool fire = false;
+	Unit* player = nullptr;
+	bool up = false, down = false, left = false, right = false;
+	bool fire = false; //총알
 public:
-	static SceneIngame* create();
+	static SceneInGame* create();
 	virtual bool init() override;
 	virtual void onEnter() override;
 
 	Unit* getPlayer();
-	void onkeyPressed(EventKeyboard::KeyCode c, Event* e);
-	void onkeyReleased(EventKeyboard::KeyCode c, Event* e);
-	void logic(float dt);
+	void onKeyPressed(EventKeyboard::KeyCode c, Event*e);
+	void onKeyReleased(EventKeyboard::KeyCode c, Event*e);
+
 	bool onContactBegin(PhysicsContact& contact);
+	void logic(float dt);
+
 };
-#endif
+#endif // !__SCENE_INGAME_H__

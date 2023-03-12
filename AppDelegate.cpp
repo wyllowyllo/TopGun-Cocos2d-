@@ -21,11 +21,11 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-
 #include "stdafx.h"
+#include "SceneInGame.h"
 #include "AppDelegate.h"
 #include "HelloWorldScene.h"
-#include "SceneIngame.h"
+
 // #define USE_AUDIO_ENGINE 1
 
 #if USE_AUDIO_ENGINE
@@ -74,9 +74,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto glview = director->getOpenGLView();
     if(!glview) {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) || (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) || (CC_TARGET_PLATFORM == CC_PLATFORM_LINUX)
-        glview = GLViewImpl::createWithRect("TopGun", cocos2d::Rect(0, 0, designResolutionSize.width, designResolutionSize.height));
+        glview = GLViewImpl::createWithRect("Topgun", cocos2d::Rect(0, 0, designResolutionSize.width, designResolutionSize.height));
 #else
-        glview = GLViewImpl::create("TopGun");
+        glview = GLViewImpl::create("Topgun");
 #endif
         director->setOpenGLView(glview);
     }
@@ -109,9 +109,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
     // create a scene. it's an autorelease object
-   // auto scene = HelloWorld::createScene();
-    auto scene = SceneIngame::create();
-
+    //auto scene = HelloWorld::createScene();
+    auto scene = SceneInGame::create();
+    
     // run
     director->runWithScene(scene);
 

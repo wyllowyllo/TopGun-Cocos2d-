@@ -1,58 +1,49 @@
 #include "stdafx.h"
 #include "EnemyComponent.h"
-#include "SceneIngame.h"
+#include "SceneInGame.h"
 #include "Bullet.h"
 
-EnemyAttackRoutine* EnemyAttackRoutine::create(EnemyAttackType t)
+EnemyAttackRoutine* EnemyAttackRoutine::create(EnemyAttacktype t)
 {
-    auto ret = new EnemyAttackRoutine();
-    if (ret && ret->init(t)) ret->autorelease();
-    else CC_SAFE_DELETE(ret);
-    return ret;
+	auto ret = new EnemyAttackRoutine;
+	if (ret && ret->init(t)) ret->autorelease();
+	else CC_SAFE_DELETE(ret);
+	return ret;
 }
 
-bool EnemyAttackRoutine::init(EnemyAttackType t)
+bool EnemyAttackRoutine::init(EnemyAttacktype t)
 {
-    if (!Component::init()) return false;
-
-    this->type = t;
-
-    return true;
+	if (!Component::init()) return false;
+	this->type = EnemyAttacktype::NORMAL;
+	return true;
 }
 
 void EnemyAttackRoutine::update(float dt)
 {
-    switch (this->type) {
-    case EnemyAttackType::NORMAL: logic_normal(dt); break;
-
-    }
+	switch (this->type) {
+	case EnemyAttacktype::NORMAL: logic_normal(dt); break;
+	}
 }
 
 void EnemyAttackRoutine::logic_normal(float dt)
 {
-    elapsed += dt;
-    if (elapsed > 1.0f) //1초가 지나면
-    {
-        elapsed = 0.0f;
-        SceneIngame* scene = (SceneIngame *)Director::getInstance()->getRunningScene(); //현재 실행중인 scene가져옴, 반환값 scene
-        auto player = scene->getPlayer();
+	elapsed += dt;
 
-        if (player == nullptr) return;
+	if (elapsed > 1.0f) { //1초 경과시
+		elapsed = 0.0f;
 
-        auto bullet = Bullet::create(ENEMY_BULLET_MASK, TAG_ENEMY_BULLET);
-        bullet->setPosition(getOwner()->getPosition()); //총알이 적의 위치에 위치하도록
-       
-        //getOwner: Component class method; it retunrs a node contains component
-        scene->addChild(bullet);
+		SceneInGame* scene = (SceneInGame*)Director::getInstance()->getRunningScene(); //현재 돌아가는 scene 가져옴
+		auto player = scene->getPlayer();
 
-        Vec2 pos = player->getPosition() - getOwner()->getPosition(); //플레이어의 벡터 - owner의 벡터 = 플레이어와 적 사이 벡터값
-        pos = pos.getNormalized() * ENEMY_BULLET_SPEED; // 길이가 1인 벡터로 변환(단위벡터로 변환, 방향을 나타냄)*투사체의 속도
-        bullet->getBody()->setVelocity(pos);
+		auto bullet = Bullet::create(ENEMY_BULLET_MASK,TAG_ENEMY_BULLET);
+		bullet->setPosition(getOwner()->getPosition()); //getOwner은 해당 컴포넌트를 가지고 있는 노드를 반환
+		scene->addChild(bullet);
 
-        bullet->runAction(Sequence::create(
-            DelayTime::create(1.0f),
-            RemoveSelf::create(),
-            nullptr
-        ));
-    }
+		Vec2 pos = player->getPosition();
+		pos -= getOwner()->getPosition(); //플레이어 위치 방향벡터를 총알 방향으로 설정
+		pos = pos.getNormalized() * ENEMY_BULLET_SPEED;//getNormalized->길이 1인 단위벡터로 변환
+		bullet->getbody()->setVelocity(pos);
+
+		bullet->runAction(Sequence::create(DelayTime::create(1.0), RemoveSelf::create(), nullptr));
+	}
 }
